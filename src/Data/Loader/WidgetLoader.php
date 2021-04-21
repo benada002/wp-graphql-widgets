@@ -8,8 +8,6 @@ use GraphQLRelay\Relay;
 
 class WidgetLoader extends AbstractDataLoader
 {
-    protected $shouldCache = false;
-
     protected function get_model( $entry, $key )
     {
         return new Widget($entry, $key);
@@ -35,16 +33,16 @@ class WidgetLoader extends AbstractDataLoader
                 continue;
             }
 
-            $widgetTypeSettings = $widgets[$keyArray[0]]->get_settings();
+            $widgetInstance = $widgets[$keyArray[0]];
 
-            if (!is_array($widgetTypeSettings)) {
+            if (empty($widgetInstance)) {
                 continue;
             }
 
-            $widgetSettings = $widgetTypeSettings[$keyArray[1]];
+            $widgetSettings = $widgetInstance->get_settings()[$keyArray[1]];
 
             if (!empty($widgetSettings)) {
-                $loaded[$key] = $widgetSettings;
+                $loaded[$key] = $widgetInstance;
             }
         }
 

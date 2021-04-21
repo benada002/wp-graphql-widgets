@@ -9,7 +9,7 @@ class WPGraphQLWidgets
 {
     public static function init()
     {
-        add_action('widgets_init', [__CLASS__, 'register']);
+        add_action('register_sidebar', [__CLASS__, 'register']);
         add_action('graphql_register_types', [__CLASS__, 'registerFields']);
         add_filter('graphql_data_loaders', [__CLASS__, 'registerLoader'], 10, 2);
     }
@@ -29,7 +29,7 @@ class WPGraphQLWidgets
     {
         register_graphql_field(
             'RootQuery', 'widget', [
-            'type' => 'Widget',
+            'type' => 'WidgetInterface',
             'description' => __('Example field added to the RootQuery Type', 'replace-with-your-textdomain'),
             'resolve' => function ( $root, $args, $context, $info ) {
                 return [
@@ -42,7 +42,7 @@ class WPGraphQLWidgets
         register_graphql_connection(
             [
             'fromType' => 'RootQuery',
-            'toType' => 'Widget',
+            'toType' => 'WidgetInterface',
             'fromFieldName' => 'widgets',
             'connectionTypeName' => 'RootQueryToWidgetConnection',
             'resolve' => function ( $root, $args, $context, $info ) {

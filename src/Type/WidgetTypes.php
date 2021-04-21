@@ -2,80 +2,35 @@
 
 namespace WPGraphQLWidgets\Type;
 
+use WPGraphQLWidgets\Registry;
+
 class WidgetTypes
 {
-    private static $widgetTypes = null;
-
     public static function register()
     {
-        $widgets = self::getWidgetTypes();
+        $widgets = Registry::init()->getActiveWidgets();
 
         foreach ($widgets as $name => $fields) {
-            \register_graphql_object_type(
-                $name, [
-                'fields' => $fields,
-                ]
-            );
-        }
-    }
-
-    public static function getWidgetTypes()
-    {
-        self::registerWidgetTypes();
-
-        return self::$widgetTypes;
-    }
-
-    public static function getWidgetTypeNames()
-    {
-        self::registerWidgetTypes();
-
-        return array_keys(self::$widgetTypes);
-    }
-
-    private static function registerWidgetTypes()
-    {
-        if (self::$widgetTypes !== null) {
-            return;
-        }
-
-        global $wp_widget_factory;
-        $widgets = $wp_widget_factory->widgets;
-
-        foreach ($widgets as $name => $widget) {
-            $objectName = \graphql_format_type_name($name);
-            $settings = $widget->get_settings();
-
-            if (empty($settings)) {
+            if (! is_array($fields)) {
                 continue;
             }
 
-            foreach ($settings as $setting) {
-                if (count($setting) > 0) {
-                    $fields = self::$widgetTypes[$objectName] = array_map(
-                        function ($setting) {
-                            return [
-                                'description' => 'Widget',
-                                'type' => self::getFieldType($setting),
+            $config = [];
 
-                            ];
-                        },
-                        $setting
-                    );
-
-                    if (!in_array($objectName, self::$widgetTypes) && count($fields) > 0) {
-                        self::$widgetTypes[$objectName] = $fields;
-                    }
-
-                    break;
-                }
+            foreach ($fields as $key => $field) {
+                $config['fields'][$key] = [
+                    'type' => self::getFieldType($field),
+                ];
             }
+
+
+            Registry::init()->registerWidgetType($name, $config);
         }
     }
 
-    private static function getFieldType($setting)
+    private static function getFieldType($field)
     {
-        switch(gettype($setting)) {
+        switch(gettype($field)) {
 
         case 'string':
             return 'String';
