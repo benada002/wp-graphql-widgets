@@ -102,12 +102,12 @@ class WidgetConnectionResolver extends AbstractConnectionResolver
             if (false !== $key ) {
                 $key = absint($key);
                 if ((! empty($this->args['before']) && ! empty($this->args['last']))
-                    || (! empty($this->args['after']) && ! empty($this->args['first']))
+                    || (! empty($this->args['after']) && empty($this->args['last']))
                 ) {
                     $key ++;
                     $nodes = array_slice($nodes, $key, null, true);
                 } elseif ((! empty($this->args['after']) && ! empty($this->args['last']))
-                    || (! empty($this->args['before']) && ! empty($this->args['first']))
+                    || (! empty($this->args['before']) && empty($this->args['last']))
                 ) {
                     $nodes = array_slice($nodes, 0, $key, true);
                 }

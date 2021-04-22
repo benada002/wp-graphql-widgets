@@ -4,6 +4,8 @@ use WPGraphQL\AppContext;
 use WPGraphQLWidgets\Registry;
 use WPGraphQLWidgets\Data\Connection\WidgetConnectionResolver;
 use WPGraphQLWidgets\Data\Loader\WidgetLoader;
+use WPGraphQLWidgets\Connection\WPNavMenuWidget;
+use WPGraphQLWidgets\Connection\WPWidgetRecentComments;
 
 class WPGraphQLWidgets
 {
@@ -51,5 +53,8 @@ class WPGraphQLWidgets
             }
             ]
         );
+
+        WPNavMenuWidget::register();
+        WPWidgetRecentComments::register();
     }
 }

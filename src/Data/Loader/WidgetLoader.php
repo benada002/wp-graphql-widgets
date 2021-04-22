@@ -27,15 +27,9 @@ class WidgetLoader extends AbstractDataLoader
 
             $loaded[ $key ] = null;
             $keyArray = explode('|', $key);
-            $widgetType = $widgets[$keyArray[0]];
-
-            if (count($keyArray) !== 2 || empty($widgetType)) {
-                continue;
-            }
-
             $widgetInstance = $widgets[$keyArray[0]];
 
-            if (empty($widgetInstance)) {
+            if (count($keyArray) !== 2 || empty($widgetInstance)) {
                 continue;
             }
 

@@ -34,9 +34,9 @@ class WidgetInterface
                         'description' => __('The HTML for the object.'),
                         'type'        => 'String',
                     ],
-                    'sidebarName' => [
-                        'description' => __('The Sidebar for the object.'),
-                        'type'        => 'String',
+                    'active' => [
+                        'description' => __('Shows if widget is active.'),
+                        'type'        => 'Boolean',
                     ],
                 ],
                 'resolveType' => function ($widget) {

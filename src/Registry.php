@@ -1,6 +1,7 @@
 <?php
 namespace WPGraphQLWidgets;
 
+use WPGraphQLWidgets\Type\ObjectType\Sidebar;
 use WPGraphQLWidgets\Type\WidgetTypes;
 use WPGraphQLWidgets\Type\InterfaceType\WidgetInterface;
 
@@ -25,6 +26,7 @@ class Registry
         do_action('register_widget_types', self::$instance);
         WidgetTypes::register();
 
+        Sidebar::register();
         WidgetInterface::register();
     }
 
@@ -48,8 +50,10 @@ class Registry
     public function getSidebarByInstanceId( $instanceId )
     {
         $id = $this->getSidebarIdByInstanceId($instanceId);
+        $sidebar = $this->sidebars[$id];
+        $sidebar['id'] = $id;
 
-        return $this->sidebars[$id];
+        return $sidebar;
     }
 
     public function getSidebarIdByInstanceId( $instanceId )
@@ -116,7 +120,6 @@ class Registry
         if (! empty($this->sidebars)) {
             return;
         }
-
         global $wp_registered_sidebars;
 
         $this->sidebars = $wp_registered_sidebars;
