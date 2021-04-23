@@ -8,7 +8,7 @@ class WidgetTypes
 {
     public static function register()
     {
-        $widgets = Registry::init()->getActiveWidgets();
+        $widgets = Registry::init()->getWidgetTypeSettings();
 
         foreach ($widgets as $name => $fields) {
             if (! is_array($fields)) {
@@ -18,7 +18,7 @@ class WidgetTypes
             $config = [];
 
             foreach ($fields as $key => $field) {
-                $config['fields'][$key] = [
+                $config['fields'][\graphql_format_field_name($key)] = [
                     'type' => self::getFieldType($field),
                 ];
             }

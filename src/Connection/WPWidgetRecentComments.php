@@ -20,7 +20,7 @@ class WPWidgetRecentComments
 
                         return DataSource::resolve_comments_connection($widget, $args, $context, $info);
                     },
-                ]
+            ]
         );
     }
 }

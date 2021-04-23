@@ -5,7 +5,7 @@ namespace WPGraphQLWidgets\Data\Connection;
 use WPGraphQL\Data\Connection\AbstractConnectionResolver;
 use WPGraphQLWidgets\Registry;
 
-class WidgetConnectionResolver extends AbstractConnectionResolver
+class SidebarConnectionResolver extends AbstractConnectionResolver
 {
     public function get_offset()
     {
@@ -51,24 +51,23 @@ class WidgetConnectionResolver extends AbstractConnectionResolver
 
     public function get_query()
     {
-        $widgets = Registry::init()->getWidgets();
+        $sidebars = Registry::init()->getSidebars();
         $queryArgs = $this->query_args;
 
-        foreach ($widgets as $key => $widget) {
-            $sidebarId = Registry::init()->getSidebarIdByInstanceId($widget->id);
+        foreach ($sidebars as $sidebarId => $sidebar) {
             if (isset($queryArgs['sidebar'])
                 && $queryArgs['sidebar'] !== $sidebarId
             ) {
-                unset($widgets[$key]);
+                unset($sidebars[$sidebarId]);
             }
         }
 
-        return array_keys($widgets);
+        return array_keys($sidebars);
     }
 
     public function get_loader_name()
     {
-        return 'widget';
+        return 'sidebar';
     }
 
     public function is_valid_offset( $offset )

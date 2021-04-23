@@ -18,6 +18,10 @@ class WidgetInterface
                             'non_null' => 'ID'
                         ],
                     ],
+                    'databaseId' => [
+                        'description' => __('Unique identifier of the sidebar.'),
+                        'type'        => 'ID',
+                    ],
                     'type' => [
                         'description' => __('Type of Widget for the object.'),
                         'type'        => 'String',

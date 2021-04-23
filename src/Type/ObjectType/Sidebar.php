@@ -14,6 +14,10 @@ class Sidebar
                         'description' => __('Unique identifier of the sidebar.'),
                         'type'        => 'ID',
                     ],
+                    'databaseId' => [
+                        'description' => __('Unique identifier of the sidebar.'),
+                        'type'        => 'ID',
+                    ],
                     'name' => [
                         'description' => __('The name of the sidebar.'),
                         'type'        => 'String',

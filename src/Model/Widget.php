@@ -22,20 +22,24 @@ class Widget extends Model
     /**
      * Widget constructor.
      *
-     * @param WP_Widget $widget The incoming WP_Widget to be modeled
+     * @param $widget The incoming WP_Widget to be modeled
      *
      * @return void
      * @throws \Exception
      */
-    public function __construct( WP_Widget $widget, String $key )
+    public function __construct( $widget, String $key )
     {
-        $splitedKey = explode('|', $key);
-
-        $this->type = $splitedKey[0];
-        $this->index = (int) ($splitedKey[1]);
+        $this->type = get_class($widget);
+        $this->index = absint(str_replace($widget->id_base . '-', '', $key));
         $this->data = $widget->get_settings()[$this->index];
         $this->key = $key;
-        $this->instance = $widget ?? null;
+        $this->instance = $widget;
+
+        if (empty($this->data)) {
+            $this->data = [
+                'id' => '',
+            ];
+        }
 
         parent::__construct();
     }
@@ -43,11 +47,18 @@ class Widget extends Model
     protected function init()
     {
         if (empty($this->fields) ) {
+            foreach ($this->data as $key => $value) {
+                $this->fields[\graphql_format_field_name($key)] = $value;
+            }
+
             $this->fields = array_merge(
-                $this->data,
+                $this->fields,
                 [
                     'id' => function () {
-                        return ( ! empty($this->key) ) ? Relay::toGlobalId('Widget', $this->key) : null;
+                        return ( ! empty($this->key) ) ? Relay::toGlobalId('WidgetInterface', $this->key) : null;
+                    },
+                    'databaseId' => function () {
+                        return ( ! empty($this->key) ) ? $this->key : null;
                     },
                     'type' => function () {
                         return ( ! empty($this->type) ) ? $this->type : null;
@@ -65,26 +76,23 @@ class Widget extends Model
 
                         return $html ?? null;
                     },
-                    'sidebarName' => function () {
-                        $sidebar = Registry::init()->getSidebarByInstanceId($this->instance->id);
-                        $sidebarName = $sidebar['name'];
-
-                        return $sidebarName ?? null;
+                    'active' => function () {
+                        return $this->is_active();
                     },
                 ]
             );
-
         }
+    }
+
+    public function is_active()
+    {
+        $sidebar = Registry::init()->getSidebarIdByInstanceId($this->instance->id);
+
+        return $sidebar !== null && $sidebar !== 'wp_inactive_widgets';
     }
 
     protected function is_private()
     {
-        $sidebar = Registry::init()->getSidebarIdByInstanceId($this->instance->id);
-
-        if ($sidebar !== null && $sidebar !== 'wp_inactive_widgets') {
-            return false;
-        }
-
-        return current_user_can('edit_theme_options');
+        return !$this->is_active() && !current_user_can('edit_theme_options');
     }
 }

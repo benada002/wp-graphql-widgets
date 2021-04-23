@@ -9,7 +9,8 @@ class Registry
 {
     private static $instance;
     private $widgetTypes = [];
-    private $activeWidgets = [];
+    private $widgetTypeSettings = [];
+    private $widgets = [];
     private $sidebarWidgets = [];
     private $sidebars = [];  
 
@@ -19,7 +20,7 @@ class Registry
             return self::$instance;
         }
         self::$instance = new Registry();
-        self::$instance->registerActiveWidgets();
+        self::$instance->registerWidgets();
         self::$instance->registerSidebarWidgets();
         self::$instance->registerSidebars();
         
@@ -40,11 +41,14 @@ class Registry
         return $this->sidebars;
     }
 
-    public function getActiveWidgets()
+    public function getWidgetTypeSettings()
     {
-        $this->registerActiveWidgets();
+        return $this->widgetTypeSettings;
+    }
 
-        return $this->activeWidgets;
+    public function getWidgets()
+    {
+        return $this->widgets;
     }
 
     public function getSidebarByInstanceId( $instanceId )
@@ -81,26 +85,40 @@ class Registry
         return $this->widgetTypes[$key];
     }
 
-    private function registerActiveWidgets()
+    private function registerWidgets()
     {
-        if (! empty($this->activeWidgets)) {
+        if (! empty($this->widgetTypeSettings) && ! empty($this->widgets)) {
             return;
         }
 
         global $wp_widget_factory;
-        $activeWidgets = $wp_widget_factory->widgets;
+        $widgetTypeSettings = $wp_widget_factory->widgets;
 
-        foreach ($activeWidgets as $name => $widget) {
-            $settings = $widget->get_settings();
+        foreach ($widgetTypeSettings as $type => $instance) {
+            $settings = $instance->get_settings();
 
             if (empty($settings)) {
                 continue;
             }
 
-            foreach ($settings as $setting) {
-                if (!in_array($name, $this->activeWidgets) && !empty($setting)) {
-                    $this->activeWidgets[$name] = $setting;
+            foreach ($settings as $key => $setting) {
+                if (!in_array($type, $this->widgetTypeSettings) && !empty($setting)) {
+                    $this->widgetTypeSettings[$type] = $setting;
                     break;
+                }
+            }
+        }
+
+        foreach ($widgetTypeSettings as $type => $instance) {
+            $settings = $instance->get_settings();
+
+            if (empty($settings)) {
+                continue;
+            }
+
+            foreach ($settings as $key => $setting) {
+                if (isset($this->widgetTypeSettings[$type])) {
+                    $this->widgets[$instance->id_base . '-' . $key] = $instance;
                 }
             }
         }

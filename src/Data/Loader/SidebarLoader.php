@@ -3,31 +3,30 @@
 namespace WPGraphQLWidgets\Data\Loader;
 
 use WPGraphQL\Data\Loader\AbstractDataLoader;
-use WPGraphQLWidgets\Model\Widget;
-use GraphQLRelay\Relay;
+use WPGraphQLWidgets\Model\Sidebar;
 use WPGraphQLWidgets\Registry;
 
-class WidgetLoader extends AbstractDataLoader
+class SidebarLoader extends AbstractDataLoader
 {
     protected function get_model( $entry, $key )
     {
-        return new Widget($entry, $key);
+        return new Sidebar($entry, $key);
     }
 
     public function loadKeys( array $keys )
     {
-        $widgets = Registry::init()->getWidgets();
+        $sidebars = Registry::init()->getSidebars();
         $loaded = [];
 
-        if (!is_array($widgets) || empty($widgets) ) {
+        if (!is_array($sidebars) || empty($sidebars) ) {
             return $loaded;
         }
 
         foreach ( $keys as $key ) {
             $loaded[ $key ] = null;
 
-            if (isset($widgets[$key])) {
-                $loaded[$key] = $widgets[$key];
+            if (isset($sidebars[$key])) {
+                $loaded[$key] = $sidebars[$key];
             }
         }
 
