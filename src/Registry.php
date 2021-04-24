@@ -16,24 +16,34 @@ class Registry
 
     public static function init()
     {
-        if (isset(self::$instance) || self::$instance instanceof Registry ) {
-            return self::$instance;
+        if (!isset(self::$instance) || ! self::$instance instanceof Registry ) {
+            self::$instance = new Registry();
+            self::$instance->registerWidgets();
+            self::$instance->registerSidebarWidgets();
+            self::$instance->registerSidebars();
+            
+            do_action('register_widget_types', self::$instance);
+            WidgetTypes::register();
+    
+            Sidebar::register();
+            WidgetInterface::register();
         }
-        self::$instance = new Registry();
-        self::$instance->registerWidgets();
-        self::$instance->registerSidebarWidgets();
-        self::$instance->registerSidebars();
-        
-        do_action('register_widget_types', self::$instance);
-        WidgetTypes::register();
 
-        Sidebar::register();
-        WidgetInterface::register();
+        return self::$instance;
     }
 
     public function getSidebarWidgets()
     {
         return $this->sidebarWidgets;
+    }
+
+    public function getSidebarWidgetsById($id)
+    {
+        if (!isset($this->sidebarWidgets[$id])) {
+            return null;
+        }
+
+        return $this->sidebarWidgets[$id];
     }
 
     public function getSidebars()
@@ -107,14 +117,6 @@ class Registry
                     break;
                 }
             }
-        }
-
-        foreach ($widgetTypeSettings as $type => $instance) {
-            $settings = $instance->get_settings();
-
-            if (empty($settings)) {
-                continue;
-            }
 
             foreach ($settings as $key => $setting) {
                 if (isset($this->widgetTypeSettings[$type])) {
@@ -141,6 +143,19 @@ class Registry
         global $wp_registered_sidebars;
 
         $this->sidebars = $wp_registered_sidebars;
+
+        $this->sidebars['wp_inactive_widgets'] = [
+            'name'=> 'Inactive Widgets',
+            'id' => 'wp_inactive_widgets',
+            'description' => '',
+            'class' => '',
+            'before_widget' => '',
+            'after_widget' => '',
+            'before_title' => '',
+            'after_title' => '',
+            'before_sidebar' => '',
+            'after_sidebar' => ''
+        ];
     }
 
     public function registerWidgetType($typeName, $config)

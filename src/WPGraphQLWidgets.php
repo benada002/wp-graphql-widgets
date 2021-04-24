@@ -12,37 +12,64 @@ use WPGraphQLWidgets\Type\Enum\SidebarEnum;
 
 class WPGraphQLWidgets
 {
-    public static function init()
+    private static $_instance;
+
+    public static function run()
     {
-        add_action('wp_loaded', [__CLASS__, 'register']);
-        add_action('graphql_register_types', [__CLASS__, 'registerFields']);
-        add_filter('graphql_data_loaders', [__CLASS__, 'registerLoader'], 10, 2);
+        if (!isset(self::$_instance) || !self::$_instance instanceof WPGraphQLWidgets) {
+            self::$_instance = new WPGraphQLWidgets();
+            self::$_instance->init();
+        }
+
+        return self::$_instance;
     }
 
-    public static function register()
+    private function init()
+    {
+        $this->loadDependecies();
+
+        add_action('wp_loaded', [$this, 'register']);
+        add_action('graphql_register_types', [$this, 'registerFields']);
+        add_filter('graphql_data_loaders', [$this, 'registerLoader'], 10, 2);
+    }
+
+    private function loadDependecies()
+    {
+        // phpcs:ignore
+        require_once __DIR__ . '/../vendor/autoload.php';
+    }
+
+    public function register()
     {
         Registry::init();
     }
 
-    public static function registerLoader( $loaders, AppContext $context )
+    public function registerLoader( $loaders, AppContext $context )
     {
         $loaders['widget'] = new WidgetLoader($context);
         $loaders['sidebar'] = new SidebarLoader($context);
         return $loaders;
     }
 
-    public static function registerFields()
+    public function registerFields()
     {
         register_graphql_field(
-            'RootQuery', 'widget', [
-            'type' => 'WidgetInterface',
-            'description' => __('Example field added to the RootQuery Type', 'replace-with-your-textdomain'),
-            'resolve' => function ( $root, $args, $context, $info ) {
-                return [
-                    'id' => 'test',
-                ];
-            }
-             ] 
+            'RootQuery',
+            'widget',
+            [
+                'type' => 'WidgetInterface',
+                'description' => __('Example field added to the RootQuery Type', 'replace-with-your-textdomain'),
+                'args'        => [
+                    'id' => [
+                        'type' => [
+                            'non_null' => 'ID'
+                        ]
+                    ]
+                ],
+                'resolve' => function ( $root, $args, $context, $info ) {
+                    return $context->get_loader('widget')->load_deferred($args['id']);
+                }
+            ] 
         );
 
         register_graphql_field(
@@ -72,7 +99,7 @@ class WPGraphQLWidgets
             'connectionArgs' => [
                 'sidebar' => [
                     'type' => 'SidebarEnum'
-                ]
+                ],
             ],
             'resolve' => function ( $root, $args, $context, $info ) {
                 $resolver = new WidgetConnectionResolver($root, $args, $context, $info);
