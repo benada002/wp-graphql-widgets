@@ -4,8 +4,6 @@ namespace WPGraphQLWidgets\Model;
 
 use GraphQLRelay\Relay;
 use WPGraphQL\Model\Model;
-use WP_Widget;
-use WPGraphQLWidgets\Registry;
 
 class Sidebar extends Model
 {
@@ -52,6 +50,6 @@ class Sidebar extends Model
 
     protected function is_private()
     {
-        return $this->key === 'wp_inactive_widgets';
+        return $this->key === 'wp_inactive_widgets' && !current_user_can('edit_theme_options');
     }
 }

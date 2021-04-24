@@ -4,7 +4,6 @@ namespace WPGraphQLWidgets\Model;
 
 use GraphQLRelay\Relay;
 use WPGraphQL\Model\Model;
-use WP_Widget;
 use WPGraphQLWidgets\Registry;
 
 class Widget extends Model
