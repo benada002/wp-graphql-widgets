@@ -2,6 +2,7 @@
 
 namespace WPGraphQLWidgets\Data\Connection;
 
+use GraphQLRelay\Relay;
 use WPGraphQL\Data\Connection\AbstractConnectionResolver;
 use WPGraphQLWidgets\Registry;
 
@@ -11,9 +12,9 @@ class SidebarConnectionResolver extends AbstractConnectionResolver
     {
         $offset = null;
         if (! empty($this->args['after']) ) {
-            $offset = substr(base64_decode($this->args['after']), strlen('arrayconnection:'));
+            $offset = Relay::fromGlobalId($this->args['after'])['id'];
         } elseif (! empty($this->args['before']) ) {
-            $offset = substr(base64_decode($this->args['before']), strlen('arrayconnection:'));
+            $offset = Relay::fromGlobalId($this->args['before'])['id'];
         }
         return $offset;
     }
@@ -72,12 +73,18 @@ class SidebarConnectionResolver extends AbstractConnectionResolver
 
     public function is_valid_offset( $offset )
     {
-        return true;
+        $sidebars = Registry::init()->getSidebars();
+
+        return isset($sidebars[$offset]) && ! empty($sidebars[$offset]);
     }
 
     public function should_execute()
     {
-        return true;
+        return !(
+            isset($this->query_args['sidebar'])
+            && $this->query_args['sidebar'] === 'wp_inactive_widgets'
+            && !current_user_can('edit_theme_options')
+        );
     }
 
     public function get_nodes()

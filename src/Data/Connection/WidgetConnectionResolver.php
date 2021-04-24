@@ -2,6 +2,7 @@
 
 namespace WPGraphQLWidgets\Data\Connection;
 
+use GraphQLRelay\Relay;
 use WPGraphQL\Data\Connection\AbstractConnectionResolver;
 use WPGraphQLWidgets\Registry;
 
@@ -11,9 +12,9 @@ class WidgetConnectionResolver extends AbstractConnectionResolver
     {
         $offset = null;
         if (! empty($this->args['after']) ) {
-            $offset = substr(base64_decode($this->args['after']), strlen('arrayconnection:'));
+            $offset = Relay::fromGlobalId($this->args['after'])['id'];
         } elseif (! empty($this->args['before']) ) {
-            $offset = substr(base64_decode($this->args['before']), strlen('arrayconnection:'));
+            $offset = Relay::fromGlobalId($this->args['before'])['id'];
         }
         return $offset;
     }
@@ -55,15 +56,35 @@ class WidgetConnectionResolver extends AbstractConnectionResolver
         $queryArgs = $this->query_args;
 
         foreach ($widgets as $key => $widget) {
-            $sidebarId = Registry::init()->getSidebarIdByInstanceId($widget->id);
             if (isset($queryArgs['sidebar'])
-                && $queryArgs['sidebar'] !== $sidebarId
+                && !empty(Registry::init()->getSidebarIdByInstanceId($queryArgs['sidebar']))
             ) {
                 unset($widgets[$key]);
             }
         }
 
-        return array_keys($widgets);
+        return $this->maybeSortBySidebarOrder($widgets);
+    }
+
+    private function maybeSortBySidebarOrder($widgets)
+    {
+        if (!isset($this->query_args['sidebar'])
+            && !Registry::init()->getSidebarWidgetsById($this->query_args['sidebar'])
+        ) {
+            return array_keys($widgets);
+        }
+
+        $order = Registry::init()->getSidebarWidgetsById($this->query_args['sidebar']);
+        $widgetKeys = [];
+
+        foreach ($order as $key) {
+            if (isset($widgets[$key])) {
+                $widgetKeys[] = $key;
+            }
+
+        }
+
+        return $widgetKeys;
     }
 
     public function get_loader_name()
@@ -73,12 +94,18 @@ class WidgetConnectionResolver extends AbstractConnectionResolver
 
     public function is_valid_offset( $offset )
     {
-        return true;
+        $widgets = Registry::init()->getWidgets();
+
+        return isset($widgets[$offset]) && ! empty($widgets[$offset]);
     }
 
     public function should_execute()
     {
-        return true;
+        return !(
+            isset($this->query_args['sidebar'])
+            && $this->query_args['sidebar'] === 'wp_inactive_widgets'
+            && !current_user_can('edit_theme_options')
+        );
     }
 
     public function get_nodes()
