@@ -8,6 +8,9 @@
         }
     ],
     "autoload": {
+        "files": [
+            "functions.php"
+        ],
         "psr-4": {
             "WPGraphQLWidgets\\": "src/"
         }
