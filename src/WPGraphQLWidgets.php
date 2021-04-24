@@ -1,6 +1,7 @@
 <?php
 
 use WPGraphQL\AppContext;
+use WPGraphQLWidgets\Connection\WPMediaImageWidget;
 use WPGraphQLWidgets\Registry;
 use WPGraphQLWidgets\Data\Connection\WidgetConnectionResolver;
 use WPGraphQLWidgets\Data\Loader\WidgetLoader;
@@ -160,5 +161,6 @@ class WPGraphQLWidgets
         SidebarEnum::register();
         WPNavMenuWidget::register();
         WPWidgetRecentComments::register();
+        WPMediaImageWidget::register();
     }
 }
