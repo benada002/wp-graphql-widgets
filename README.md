@@ -1,5 +1,5 @@
 # WPQraphQL Widgets (Queries)
-This plugin registers for each active widget a new widget type which exposes all settings of the widget and implements the `WidgetInterface` which exposes the following fields.
+This plugin registers for each active widget a new widget type which exposes all settings of the widget (and for some widgets a `rendered` field [more here](#rendered-field)) and implements the `WidgetInterface` which exposes the following fields.
 ```
   WidgetInterface {
     active
