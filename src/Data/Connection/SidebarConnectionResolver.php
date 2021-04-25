@@ -111,15 +111,20 @@ class SidebarConnectionResolver extends AbstractConnectionResolver
 
             if (false !== $key ) {
                 $key = absint($key);
-                if ((! empty($this->args['before']) && ! empty($this->args['last']))
+
+                if (! empty($this->args['after']) && ! empty($this->args['last'])
+                    || (! empty($this->args['before']) && empty($this->args['last']))
+                ) {
+                    $index = max(($key - $this->query_amount), 0);
+                    $length = ($index === 0 )
+                        ? absint($this->query_amount - $this->query_amount - $key) : null;
+
+                    $nodes = array_slice($nodes, $index, $length, true);
+                } elseif ((! empty($this->args['before']) && ! empty($this->args['last']))
                     || (! empty($this->args['after']) && empty($this->args['last']))
                 ) {
                     $key ++;
                     $nodes = array_slice($nodes, $key, null, true);
-                } elseif ((! empty($this->args['after']) && ! empty($this->args['last']))
-                    || (! empty($this->args['before']) && empty($this->args['last']))
-                ) {
-                    $nodes = array_slice($nodes, 0, $key, true);
                 }
             }
         }
