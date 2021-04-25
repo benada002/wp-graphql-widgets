@@ -55,7 +55,7 @@ You can install and activate it just like any other WordPress plugin.
   }
 ```
 #### Rendered field
-For the `WPNavMenuWidget`, `WPMediaImageWidget` and `WPWidgetRecentComments` types there is also `rendered` field which is a connection to their WPGraphQL type. Here is an example.
+For the `WPNavMenuWidget`, `WPMediaImageWidget` and `WPWidgetRecentComments` types there is also `rendered` field which is a connection to their WPGraphQL type. Here is an example which gives you the menu of the widget.
 ```graphql
   widget(id: "nav_menu-3") {
     databaseId
