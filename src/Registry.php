@@ -4,6 +4,12 @@ namespace WPGraphQLWidgets;
 use WPGraphQLWidgets\Type\ObjectType\Sidebar;
 use WPGraphQLWidgets\Type\WidgetTypes;
 use WPGraphQLWidgets\Type\InterfaceType\WidgetInterface;
+use WPGraphQLWidgets\Connection\Sidebar as SidebarConnections;
+use WPGraphQLWidgets\Connection\WidgetInterface as WidgetInterfaceConnections;
+use WPGraphQLWidgets\Connection\WPMediaImageWidget;
+use WPGraphQLWidgets\Connection\WPNavMenuWidget;
+use WPGraphQLWidgets\Connection\WPWidgetRecentComments;
+use WPGraphQLWidgets\Type\Enum\SidebarEnum;
 
 class Registry
 {
@@ -24,12 +30,25 @@ class Registry
             
             do_action('register_widget_types', self::$instance);
             WidgetTypes::register();
-    
-            Sidebar::register();
-            WidgetInterface::register();
+
+            self::registerTypes();
         }
 
         return self::$instance;
+    }
+
+    public static function registerTypes()
+    {
+        Sidebar::register();
+        WidgetInterface::register();
+
+        SidebarConnections::register();
+        WidgetInterfaceConnections::register();
+
+        SidebarEnum::register();
+        WPNavMenuWidget::register();
+        WPWidgetRecentComments::register();
+        WPMediaImageWidget::register();
     }
 
     public function getSidebarWidgets()

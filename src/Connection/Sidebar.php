@@ -2,24 +2,46 @@
 
 namespace WPGraphQLWidgets\Connection;
 
-use WPGraphQL\Data\Connection\MenuConnectionResolver;
+use WPGraphQLWidgets\Data\Connection\SidebarConnectionResolver;
+use WPGraphQLWidgets\Registry;
 
-class WPNavMenuWidget
+class Sidebar
 {
     public static function register()
     {
         register_graphql_connection(
             [
-                'fromType' => 'WidgetInterface',
+                    'fromType' => 'WidgetInterface',
+                    'toType' => 'Sidebar',
+                    'fromFieldName' => 'sidebar',
+                    'oneToOne' => true,
+                    'resolve'  => function ( $widget, $args, $context, $info ) {
+                        $sidebarId = Registry::init()->getSidebarIdByInstanceId($widget->databaseId);
+                        $resolver = new SidebarConnectionResolver($widget, $args, $context, $info);
+                        $resolver->set_query_arg('sidebar', $sidebarId);
+
+                        return $resolver->one_to_one()->get_connection();
+                    },
+            ]
+        );
+
+        register_graphql_connection(
+            [
+                'fromType' => 'RootQuery',
                 'toType' => 'Sidebar',
-                'fromFieldName' => 'sidebar',
-                'oneToOne'      => true,
-                'resolve' => function ( $widget, $args, $context, $info ) {
-                    $resolver = new MenuConnectionResolver($widget, $args, $context, $info);
-                    $resolver->set_query_arg('include', $widget->nav_menu);
-                    return $resolver->one_to_one()->get_connection();
-                },
-              ]
+                'fromFieldName' => 'sidebars',
+                'connectionArgs'        => [
+                    'sidebar' => [
+                        'type' => [
+                            'non_null' => 'SidebarEnum'
+                        ]
+                    ]
+                ],
+                'resolve' => function ( $sidebar, $args, $context, $info ) {
+                    $resolver = new SidebarConnectionResolver($sidebar, $args, $context, $info);
+                    return $resolver->get_connection();
+                }
+            ]
         );
     }
 }
