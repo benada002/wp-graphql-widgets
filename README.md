@@ -1,6 +1,17 @@
 # WPQraphQL Widgets (Queries)
-This plugin adds widgets and sidebar queries to WPGraphQL.
-
+This plugin registers for each active widget a new widget type which exposes all settings of the widget and implements the `WidgetInterface` which exposes the following fields.
+```
+  WidgetInterface {
+    active
+    databaseId
+    html
+    id
+    idBase
+    title
+    type
+  }
+```
+It also adds sidebar queries.
 ## Requirements
 - [WPGraphQL](https://github.com/wp-graphql/wp-graphql)
 
@@ -9,24 +20,19 @@ You can install and activate it just like any other WordPress plugin.
 
 ## Usage
 ### Widget Examples
-```
-  widget(id: "widget_instance_id") {
-    active
-    databaseId
-    html
-    id
-    idBase
-    title
-    type
-    sidebar {
-      node {
-        name
-        databaseId
-      }
+```graphql
+  widget(id: "nav_menu-3") {
+    ... on WPNavMenuWidget {
+      navMenu
+      active
+      databaseId
+      html
+      id
+      idBase
     }
   }
 ```
-```
+```graphql
   widgets {
     edges {
       cursor
@@ -49,7 +55,7 @@ You can install and activate it just like any other WordPress plugin.
   }
 ```
 For the `WPNavMenuWidget`, `WPMediaImageWidget` and `WPWidgetRecentComments` types there is also `rendered` field which is a connection to their WPGraphQL type. Here is an example.
-```
+```graphql
   widget(id: "nav_menu-3") {
     databaseId
     id
@@ -69,7 +75,7 @@ For the `WPNavMenuWidget`, `WPMediaImageWidget` and `WPWidgetRecentComments` typ
 ```
 
 ### Sidebar Examples
-```
+```graphql
   sidebar(sidebar: SIDEBAR) {
     afterSidebar
     afterTitle
@@ -92,7 +98,7 @@ For the `WPNavMenuWidget`, `WPMediaImageWidget` and `WPWidgetRecentComments` typ
     }
   }
 ```
-```
+```graphql
   sidebars {
     edges {
       cursor
