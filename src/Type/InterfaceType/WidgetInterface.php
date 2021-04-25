@@ -19,11 +19,11 @@ class WidgetInterface
                         ],
                     ],
                     'databaseId' => [
-                        'description' => __('Unique identifier of the sidebar.'),
+                        'description' => __('The widget instance id'),
                         'type'        => 'ID',
                     ],
                     'type' => [
-                        'description' => __('Type of Widget for the object.'),
+                        'description' => __('The class name of Widget for the object.'),
                         'type'        => 'String',
                     ],
                     'title' => [
@@ -31,7 +31,7 @@ class WidgetInterface
                         'type'        => 'String',
                     ],
                     'idBase' => [
-                        'description' => __('The HTML for the object.'),
+                        'description' => __('The id_base of the widget.'),
                         'type'        => 'String',
                     ],
                     'html' => [
