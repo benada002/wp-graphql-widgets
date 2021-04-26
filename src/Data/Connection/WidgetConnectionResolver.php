@@ -118,8 +118,6 @@ class WidgetConnectionResolver extends AbstractConnectionResolver
 
         $ids = $this->ids;
 
-        $ids = ! empty($this->args['last']) ? array_reverse($ids) : $ids;
-
         foreach ( $ids as $id ) {
             $model = $this->get_node_by_id($id);
             if (true === $this->is_valid_model($model) ) {
@@ -127,29 +125,20 @@ class WidgetConnectionResolver extends AbstractConnectionResolver
             }
         }
 
-        if (! empty($this->get_offset()) ) {
+        $nodes = ! empty($this->args['last']) ? array_reverse($nodes) : $nodes;
+
+        if ((! empty($this->args['before']) && empty($this->args['last'])) || (! empty($this->args['after']) && ! empty($this->args['last']))) {
+            $nodes = array_reverse($nodes);
             $key = array_search($this->get_offset(), array_keys($nodes), true);
-
-            if (false !== $key ) {
-                $key = absint($key);
-
-                if (! empty($this->args['after']) && ! empty($this->args['last'])
-                    || (! empty($this->args['before']) && empty($this->args['last']))
-                ) {
-                    $index = max(($key - $this->query_amount), 0);
-                    $length = ($index === 0 )
-                        ? absint($this->query_amount - $this->query_amount - $key) : null;
-
-                    $nodes = array_slice($nodes, $index, $length, true);
-                } elseif ((! empty($this->args['before']) && ! empty($this->args['last']))
-                    || (! empty($this->args['after']) && empty($this->args['last']))
-                ) {
-                    $key ++;
-                    $nodes = array_slice($nodes, $key, null, true);
-                }
-            }
+            $nodes = $key !== false ? array_slice($nodes, absint($key) + 1, null, true) : [];
+			$nodes = array_reverse($nodes);
+        } elseif ((! empty($this->args['before']) &&!empty($this->args['last'])) || (! empty($this->args['after']) && empty($this->args['last']))) {
+            $key = array_search($this->get_offset(), array_keys($nodes), true);
+            $nodes = $key !== false ? array_slice($nodes, absint($key) + 1, null, true) : [];
         }
 
-        return array_slice($nodes, 0, $this->query_amount, true);
+		$nodes = array_slice($nodes, 0, $this->query_amount, true);
+
+		return ! empty($this->args['last']) ? array_reverse($nodes) : $nodes;
     }
 }
