@@ -78,6 +78,36 @@ class SidebarConnectionResolver extends AbstractConnectionResolver
         return isset($sidebars[$offset]) && ! empty($sidebars[$offset]);
     }
 
+    public function has_next_page() {
+        if (empty($this->ids)) {
+            return false;
+        }
+
+		$key = array_search($this->get_offset(), $this->ids, true);
+        $length = count($this->ids);
+        $nextIndex = $key + $this->query_amount + 1;
+
+		if ( ! empty( $this->args['after'] ) ) {
+			return $nextIndex < $length;
+		}
+
+		return $key < $length;
+	}
+
+    public function has_previous_page() {
+        if (empty($this->ids)) {
+            return false;
+        }
+
+        $key = array_search($this->get_offset(), $this->ids, true);
+
+        if ( ! empty( $this->args['before'] ) ) {
+			return $key - $this->query_amount > 0;
+		}
+
+		return $key > 0;
+	}
+
     public function should_execute()
     {
         return !(
