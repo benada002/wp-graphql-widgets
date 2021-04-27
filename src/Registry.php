@@ -9,6 +9,7 @@ use WPGraphQLWidgets\Connection\WidgetInterface as WidgetInterfaceConnections;
 use WPGraphQLWidgets\Connection\WPMediaImageWidget;
 use WPGraphQLWidgets\Connection\WPNavMenuWidget;
 use WPGraphQLWidgets\Connection\WPWidgetRecentComments;
+use WPGraphQLWidgets\Connection\WPWidgetRecentPosts;
 use WPGraphQLWidgets\Type\Enum\SidebarEnum;
 
 class Registry
@@ -49,6 +50,7 @@ class Registry
         WPNavMenuWidget::register();
         WPWidgetRecentComments::register();
         WPMediaImageWidget::register();
+        WPWidgetRecentPosts::register();
     }
 
     public function getSidebarWidgets()
