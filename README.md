@@ -1,4 +1,6 @@
 # WPGraphQL Widgets (Queries)
+*This Plugin is a first attempt. So there might be some bugs.*
+
 This plugin registers for each active widget a new widget type which exposes all settings of the widget (and for some widgets a `rendered` field [more here](#rendered-field)) and implements the `WidgetInterface` which exposes the following fields.
 ```
   WidgetInterface {
@@ -55,7 +57,7 @@ You can install and activate it just like any other WordPress plugin.
   }
 ```
 #### Rendered field
-For the `WPNavMenuWidget`, `WPMediaImageWidget`, `WPWidgetRecentPosts`, `WPWidgetCategories`, `WPWidgetPages` and `WPWidgetRecentComments` types there is also `rendered` field which is a connection to their WPGraphQL type. Here is an example which gives you the menu of a menu widget.
+For the `WPNavMenuWidget`, `WPMediaImageWidget`, `WPWidgetRecentPosts`, `WPWidgetCategories`, `WPWidgetPages` and `WPWidgetRecentComments` types there is also `rendered` field which is a connection to their WPGraphQL type. Here is an example which would give you the menu of a menu widget.
 ```graphql
   widget(id: "nav_menu-3") {
     databaseId
