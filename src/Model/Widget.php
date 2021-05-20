@@ -70,7 +70,7 @@ class Widget extends Model
                     },
                     'html' => function () {
                         ob_start();
-                        the_widget($this->type, $this->instance);
+                        the_widget($this->type, $this->data);
                         $html = ob_get_clean();
 
                         return $html ?? null;
