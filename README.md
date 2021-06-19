@@ -1,5 +1,4 @@
 # WPGraphQL Widgets (Queries)
-*This Plugin is a first attempt. So there might be some bugs.*
 
 This plugin registers for each active widget a new widget type which exposes all settings of the widget (and for some widgets a `rendered` field [more here](#rendered-field)) and implements the `WidgetInterface` which exposes the following fields.
 ```
