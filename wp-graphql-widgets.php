@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WPGraphQL Widgets
- * Version: 0.0.2
+ * Version: 0.0.3
  * Author: Benedict Adams
  * Text Domain: wp-graphql-widgets
  *
