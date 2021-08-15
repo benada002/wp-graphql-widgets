@@ -60,7 +60,7 @@ class ResetUserPassword {
 	 * @return callable
 	 */
 	public static function mutate_and_get_payload() {
-		return function( $input, AppContext $context, ResolveInfo $info ) {
+		return function ( $input, AppContext $context, ResolveInfo $info ) {
 
 			if ( empty( $input['key'] ) ) {
 				throw new UserError( __( 'A password reset key is required.', 'wp-graphql' ) );
@@ -105,7 +105,8 @@ class ResetUserPassword {
 			 * Return the user ID
 			 */
 			return [
-				'id' => $user->ID,
+				'id'   => $user->ID,
+				'user' => $context->get_loader( 'user' )->load_deferred( $user->ID ),
 			];
 		};
 	}

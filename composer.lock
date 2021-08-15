@@ -4,28 +4,28 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "09390697912a68d04ad2d5be84c07c7d",
+    "content-hash": "12c23e8050c6d2f91cd34ab45e6ae733",
     "packages": [
         {
             "name": "ivome/graphql-relay-php",
-            "version": "v0.5.0",
+            "version": "v0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ivome/graphql-relay-php.git",
-                "reference": "b227c17e79564d147db2162329f5bdbe19192313"
+                "reference": "7055fd45b7e552cee4d1290849b84294b0049373"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ivome/graphql-relay-php/zipball/b227c17e79564d147db2162329f5bdbe19192313",
-                "reference": "b227c17e79564d147db2162329f5bdbe19192313",
+                "url": "https://api.github.com/repos/ivome/graphql-relay-php/zipball/7055fd45b7e552cee4d1290849b84294b0049373",
+                "reference": "7055fd45b7e552cee4d1290849b84294b0049373",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4,<8.0-DEV",
-                "webonyx/graphql-php": ">=0.7.0"
+                "php": "^7.1 || ^8.0",
+                "webonyx/graphql-php": "^14.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
                 "satooshi/php-coveralls": "~1.0"
             },
             "type": "library",
@@ -45,20 +45,20 @@
                 "api",
                 "graphql"
             ],
-            "time": "2018-05-10T20:18:11+00:00"
+            "time": "2021-04-24T19:31:29+00:00"
         },
         {
             "name": "webonyx/graphql-php",
-            "version": "v14.4.0",
+            "version": "v14.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webonyx/graphql-php.git",
-                "reference": "aab3d49181467db064b41429cde117a7589625fc"
+                "reference": "36b83621deb5eae354347a2e86dc7aec81b32a82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webonyx/graphql-php/zipball/aab3d49181467db064b41429cde117a7589625fc",
-                "reference": "aab3d49181467db064b41429cde117a7589625fc",
+                "url": "https://api.github.com/repos/webonyx/graphql-php/zipball/36b83621deb5eae354347a2e86dc7aec81b32a82",
+                "reference": "36b83621deb5eae354347a2e86dc7aec81b32a82",
                 "shasum": ""
             },
             "require": {
@@ -72,9 +72,9 @@
                 "nyholm/psr7": "^1.2",
                 "phpbench/phpbench": "^0.16.10",
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.32",
-                "phpstan/phpstan-phpunit": "0.12.11",
-                "phpstan/phpstan-strict-rules": "0.12.2",
+                "phpstan/phpstan": "0.12.82",
+                "phpstan/phpstan-phpunit": "0.12.18",
+                "phpstan/phpstan-strict-rules": "0.12.9",
                 "phpunit/phpunit": "^7.2|^8.5",
                 "psr/http-message": "^1.0",
                 "react/promise": "2.*",
@@ -107,26 +107,26 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2020-12-03T16:05:21+00:00"
+            "time": "2021-06-15T16:14:17+00:00"
         },
         {
             "name": "wp-graphql/wp-graphql",
-            "version": "v1.3.5",
+            "version": "v1.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-graphql/wp-graphql.git",
-                "reference": "b2471c50f338080ea10c8f2f519cf141b32273b1"
+                "reference": "0068cb66cdb3ad2fe35223862e4b57914f15d01c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-graphql/wp-graphql/zipball/b2471c50f338080ea10c8f2f519cf141b32273b1",
-                "reference": "b2471c50f338080ea10c8f2f519cf141b32273b1",
+                "url": "https://api.github.com/repos/wp-graphql/wp-graphql/zipball/0068cb66cdb3ad2fe35223862e4b57914f15d01c",
+                "reference": "0068cb66cdb3ad2fe35223862e4b57914f15d01c",
                 "shasum": ""
             },
             "require": {
-                "ivome/graphql-relay-php": "0.5.0",
-                "php": ">=7.1.0",
-                "webonyx/graphql-php": "14.4.0"
+                "ivome/graphql-relay-php": "0.6.0",
+                "php": "^7.1 || ^8.0",
+                "webonyx/graphql-php": "14.9.0"
             },
             "require-dev": {
                 "automattic/vipwpcs": "^2.2",
@@ -143,12 +143,12 @@
                 "phpcompatibility/phpcompatibility-wp": "^2.1.0",
                 "phpstan/extension-installer": "^1.1",
                 "phpstan/phpstan": "^0.12.64",
-                "phpunit/phpunit": "^7.5",
+                "phpunit/phpunit": "^8.5",
                 "simpod/php-coveralls-mirror": "^3.0",
                 "squizlabs/php_codesniffer": "^3.5.7",
                 "szepeviktor/phpstan-wordpress": "^0.7.1",
                 "wp-coding-standards/wpcs": "^2.3",
-                "wp-graphql/wp-graphql-testcase": "^1.1"
+                "wp-graphql/wp-graphql-testcase": "~2.1"
             },
             "type": "wordpress-plugin",
             "autoload": {
@@ -184,7 +184,7 @@
                 }
             ],
             "description": "GraphQL API for WordPress",
-            "time": "2021-04-07T13:36:57+00:00"
+            "time": "2021-08-13T17:22:35+00:00"
         }
     ],
     "packages-dev": [
@@ -256,16 +256,16 @@
         },
         {
             "name": "php-stubs/wordpress-stubs",
-            "version": "v5.7.0",
+            "version": "v5.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-stubs/wordpress-stubs.git",
-                "reference": "69baf30e7c92f149526da950a68222af05f7bc67"
+                "reference": "794e6eedfd5f2a334d581214c007fc398be588fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-stubs/wordpress-stubs/zipball/69baf30e7c92f149526da950a68222af05f7bc67",
-                "reference": "69baf30e7c92f149526da950a68222af05f7bc67",
+                "url": "https://api.github.com/repos/php-stubs/wordpress-stubs/zipball/794e6eedfd5f2a334d581214c007fc398be588fe",
+                "reference": "794e6eedfd5f2a334d581214c007fc398be588fe",
                 "shasum": ""
             },
             "replace": {
@@ -292,7 +292,7 @@
                 "static analysis",
                 "wordpress"
             ],
-            "time": "2021-03-10T10:29:23+00:00"
+            "time": "2021-07-21T02:34:37+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

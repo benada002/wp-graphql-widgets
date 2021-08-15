@@ -2,7 +2,7 @@
 
 namespace WPGraphQL\Type;
 
-use GraphQL\Error\UserError;
+use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\ObjectType;
 use WPGraphQL\Data\DataSource;
 use WPGraphQL\Registry\TypeRegistry;
@@ -18,6 +18,8 @@ use WPGraphQL\Type\InterfaceType\Node;
  * @since   0.0.5
  */
 class WPObjectType extends ObjectType {
+
+	use WPInterfaceTrait;
 
 	/**
 	 * Holds the node_interface definition allowing WPObjectTypes
@@ -37,11 +39,17 @@ class WPObjectType extends ObjectType {
 	public $type_registry;
 
 	/**
+	 * @var array
+	 */
+	public $config;
+
+	/**
 	 * WPObjectType constructor.
 	 *
 	 * @param array        $config
 	 * @param TypeRegistry $type_registry
 	 *
+	 * @throws \Exception
 	 * @since 0.0.5
 	 */
 	public function __construct( $config, TypeRegistry $type_registry ) {
@@ -59,53 +67,20 @@ class WPObjectType extends ObjectType {
 		 */
 		$config = apply_filters( 'graphql_wp_object_type_config', $config, $this );
 
+		$this->config = $config;
+
 		/**
 		 * Set the Types to start with capitals
 		 */
 		$name           = ucfirst( $config['name'] );
 		$config['name'] = apply_filters( 'graphql_type_name', $name, $config, $this );
 
-		$interfaces = isset( $config['interfaces'] ) ? $config['interfaces'] : [];
-
-		/**
-		 * Filters the interfaces applied to an object type
-		 *
-		 * @param array        $interfaces     List of interfaces applied to the Object Type
-		 * @param array        $config         The config for the Object Type
-		 * @param WPObjectType $wp_object_type The WPObjectType instance
-		 */
-		$interfaces               = apply_filters( 'graphql_object_type_interfaces', $interfaces, $config, $this );
-		$config['interfaceNames'] = $interfaces;
-
-		/**
-		 * Convert Interfaces from Strings to Types
-		 */
-		$config['interfaces'] = function() use ( $interfaces ) {
-			$new_interfaces = [];
-			if ( ! is_array( $interfaces ) ) {
-				// TODO Throw an error.
-				return $new_interfaces;
-			}
-
-			foreach ( $interfaces as $interface ) {
-				if ( is_string( $interface ) ) {
-					$new_interfaces[ $interface ] = $this->type_registry->get_type( $interface );
-					continue;
-				}
-				if ( $interface instanceof WPInterfaceType ) {
-					$new_interfaces[ get_class( $interface ) ] = $interface;
-				}
-			}
-
-			return $new_interfaces;
-		};
-
 		/**
 		 * Setup the fields
 		 *
 		 * @return array|mixed
 		 */
-		$config['fields'] = function() use ( $config ) {
+		$config['fields'] = function () use ( $config ) {
 
 			$fields = $config['fields'];
 
@@ -114,35 +89,38 @@ class WPObjectType extends ObjectType {
 			 *
 			 * Types are still responsible for ensuring the fields resolve properly.
 			 */
-			if ( ! empty( $config['interfaceNames'] ) ) {
-				// Throw if "interfaceNames" invalid.
-				if ( ! is_array( $config['interfaceNames'] ) ) {
-					throw new UserError(
-						sprintf(
-						/* translators: %s: type name */
-							__( 'Invalid value provided as "interfaceNames" on %s.', 'wp-graphql' ),
-							$config['name']
-						)
-					);
-				}
+			if ( ! empty( $this->getInterfaces() ) && is_array( $this->getInterfaces() ) ) {
 
-				foreach ( $config['interfaceNames'] as $interface_name ) {
-					$interface_type = null;
-					if ( is_string( $interface_name ) ) {
-						$interface_type = $this->type_registry->get_type( $interface_name );
-					} elseif ( $interface_name instanceof WPInterfaceType ) {
-						$interface_type = $interface_name;
+				$interface_fields = [];
+
+				foreach ( $this->getInterfaces() as $interface_type ) {
+
+					if ( ! $interface_type instanceof InterfaceType ) {
+						$interface_type = $this->type_registry->get_type( $interface_type );
 					}
-					$interface_fields = [];
-					if ( ! empty( $interface_type ) && $interface_type instanceof WPInterfaceType ) {
-						$interface_config_fields = $interface_type->getFields();
-						foreach ( $interface_config_fields as $interface_field ) {
-							$interface_fields[ $interface_field->name ] = $interface_field->config;
+
+					if ( ! $interface_type instanceof InterfaceType ) {
+						continue;
+					}
+
+					$interface_config_fields = $interface_type->getFields();
+
+					if ( empty( $interface_config_fields ) || ! is_array( $interface_config_fields ) ) {
+						continue;
+					}
+
+					foreach ( $interface_config_fields as $interface_field_name => $interface_field ) {
+						if ( ! isset( $interface_field->config ) ) {
+							continue;
 						}
-					}
 
-					$fields = array_replace_recursive( $interface_fields, $fields );
+						$interface_fields[ $interface_field_name ] = $interface_field->config;
+					}
 				}
+			}
+
+			if ( ! empty( $interface_fields ) ) {
+				$fields = array_replace_recursive( $interface_fields, $fields );
 			}
 
 			$fields = $this->prepare_fields( $fields, $config['name'], $config );
@@ -160,6 +138,15 @@ class WPObjectType extends ObjectType {
 		do_action( 'graphql_wp_object_type', $config, $this );
 
 		parent::__construct( $config );
+	}
+
+	/**
+	 * Get the interfaces implemented by the ObjectType
+	 *
+	 * @return array
+	 */
+	public function getInterfaces(): array {
+		return $this->get_implemented_interfaces();
 	}
 
 	/**

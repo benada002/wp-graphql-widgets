@@ -127,16 +127,6 @@ class UserCreate {
 			'user' => [
 				'type'        => 'User',
 				'description' => __( 'The User object mutation type.', 'wp-graphql' ),
-				'resolve'     => function( $payload ) {
-
-					$user = get_user_by( 'ID', (int) $payload['id'] );
-
-					if ( empty( $user ) ) {
-						return null;
-					}
-
-					return new User( $user );
-				},
 			],
 		];
 	}
@@ -147,7 +137,7 @@ class UserCreate {
 	 * @return callable
 	 */
 	public static function mutate_and_get_payload() {
-		return function( $input, AppContext $context, ResolveInfo $info ) {
+		return function ( $input, AppContext $context, ResolveInfo $info ) {
 			if ( ! current_user_can( 'create_users' ) ) {
 				throw new UserError( __( 'Sorry, you are not allowed to create a new user.', 'wp-graphql' ) );
 			}
@@ -190,7 +180,8 @@ class UserCreate {
 			 * Return the new user ID
 			 */
 			return [
-				'id' => $user_id,
+				'id'   => $user_id,
+				'user' => $context->get_loader( 'user' )->load_deferred( $user_id ),
 			];
 		};
 	}

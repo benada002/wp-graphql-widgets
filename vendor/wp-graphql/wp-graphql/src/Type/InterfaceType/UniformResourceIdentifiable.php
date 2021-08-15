@@ -16,7 +16,6 @@ class UniformResourceIdentifiable {
 	 * Registers the UniformResourceIdentifiable Interface to the Schema.
 	 *
 	 * @param TypeRegistry $type_registry
-	 *
 	 * @return void
 	 */
 	public static function register_type( TypeRegistry $type_registry ) {
@@ -25,16 +24,30 @@ class UniformResourceIdentifiable {
 			[
 				'description' => __( 'Any node that has a URI', 'wp-graphql' ),
 				'fields'      => [
-					'uri' => [
+					'uri'           => [
 						'type'        => 'String',
 						'description' => __( 'The unique resource identifier path', 'wp-graphql' ),
 					],
-					'id'  => [
+					'id'            => [
 						'type'        => [ 'non_null' => 'ID' ],
 						'description' => __( 'The unique resource identifier path', 'wp-graphql' ),
 					],
+					'isContentNode' => [
+						'type'        => [ 'non_null' => 'Boolean' ],
+						'description' => __( 'Whether the node is a Content Node', 'wp-graphql' ),
+						'resolve'     => function ( $node ) {
+							return $node instanceof Post;
+						},
+					],
+					'isTermNode'    => [
+						'type'        => [ 'non_null' => 'Boolean' ],
+						'description' => __( 'Whether the node is a Term', 'wp-graphql' ),
+						'resolve'     => function ( $node ) {
+							return $node instanceof Term;
+						},
+					],
 				],
-				'resolveType' => function( $node ) use ( $type_registry ) {
+				'resolveType' => function ( $node ) use ( $type_registry ) {
 
 					switch ( true ) {
 						case $node instanceof Post:
@@ -58,7 +71,6 @@ class UniformResourceIdentifiable {
 					}
 
 					return $type;
-
 				},
 			]
 		);
