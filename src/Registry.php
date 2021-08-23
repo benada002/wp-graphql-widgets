@@ -192,6 +192,8 @@ class Registry
         $objectName = \graphql_format_type_name($typeName);
         $this->widgetTypes[$typeName] = $objectName;
 
+        $config['eagerlyLoadType'] = true;
+
         \register_graphql_object_type($objectName, $config);
     }
 }

@@ -86,8 +86,12 @@ class PostObjectConnectionResolver extends AbstractConnectionResolver {
 	 * @throws Exception
 	 */
 	public function get_query() {
+		// Get query class.
+		$queryClass = ! empty( $this->context->queryClass )
+			? $this->context->queryClass
+			: '\WP_Query';
 
-		$query = new \WP_Query( $this->query_args );
+		$query = new $queryClass( $this->query_args );
 
 		if ( isset( $query->query_vars['suppress_filters'] ) && true === $query->query_vars['suppress_filters'] ) {
 			throw new InvariantViolation( __( 'WP_Query has been modified by a plugin or theme to suppress_filters, which will cause issues with WPGraphQL Execution. If you need to suppress filters for a specific reason within GraphQL, consider registering a custom field to the WPGraphQL Schema with a custom resolver.', 'wp-graphql' ) );
@@ -271,7 +275,7 @@ class PostObjectConnectionResolver extends AbstractConnectionResolver {
 
 				$post_in = $query_args['post__in'];
 				// Make sure the IDs are integers
-				$post_in = array_map( function( $id ) {
+				$post_in = array_map( function ( $id ) {
 					return absint( $id );
 				}, $post_in );
 
@@ -415,6 +419,7 @@ class PostObjectConnectionResolver extends AbstractConnectionResolver {
 			'status'        => 'post_status',
 			'stati'         => 'post_status',
 			'dateQuery'     => 'date_query',
+			'contentTypes'  => 'post_type',
 		];
 
 		/**
@@ -498,7 +503,7 @@ class PostObjectConnectionResolver extends AbstractConnectionResolver {
 		 */
 		$allowed_statuses = array_filter(
 			array_map(
-				function( $status ) use ( $post_type_objects ) {
+				function ( $status ) use ( $post_type_objects ) {
 					foreach ( $post_type_objects as $post_type_object ) {
 						if ( 'publish' === $status ) {
 							return $status;

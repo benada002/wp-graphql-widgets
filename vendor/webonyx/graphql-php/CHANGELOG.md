@@ -2,6 +2,75 @@
 
 #### Unreleased
 
+#### 14.9.0
+
+Feat:
+- Add support for type config decorator in `SchemaExtender`
+
+#### 14.8.0
+
+Feat:
+- Implement `GraphQL\Utils\AST::getOperationAST()`
+
+#### 14.7.0
+
+Feat:
+- Allow providing field definitions as a callable and resolve them lazily
+
+#### 14.6.4
+
+Fix:
+- Avoid crashing in `QueryPlan` when `__typename` is used in the query
+
+#### 14.6.3
+
+Refactoring:
+- Improve performance of subtype checks
+
+#### 14.6.2
+
+Fix:
+- Fix overly eager validation of repeatable directive usage
+
+#### 14.6.1
+
+Fix:
+- Add fallback for `directive.isRepeatable` in `BuildClientSchema`
+
+#### 14.6.0
+
+Feat:
+- Open ReferenceExecutor for extending
+
+#### 14.5.1
+
+Fix:
+- Fix Input Object field shortcut definition with callable (#773)
+
+#### 14.5.0
+
+Feat:
+- Implement support for interfaces implementing interfaces (#740), huge kudos to @Kingdutch
+
+Deprecates:
+- Constant `BreakingChangeFinder::BREAKING_CHANGE_INTERFACE_REMOVED_FROM_OBJECT`.
+  Use `BreakingChangeFinder::BREAKING_CHANGE_IMPLEMENTED_INTERFACE_REMOVED` instead.
+  Constant value also changed from `INTERFACE_REMOVED_FROM_OBJECT` to `IMPLEMENTED_INTERFACE_REMOVED`.
+
+- Constant `BreakingChangeFinder::DANGEROUS_CHANGE_INTERFACE_ADDED_TO_OBJECT`
+  Use `DANGEROUS_CHANGE_IMPLEMENTED_INTERFACE_ADDED` instead.
+  Constant value also changed from `INTERFACE_ADDED_TO_OBJECT` to `IMPLEMENTED_INTERFACE_ADDED`.
+
+Refactoring:
+- Reify AST node types and remove unneeded nullability (#751)
+
+#### 14.4.1
+
+Fix:
+- Allow pushing nodes to `NodeList` via `[]=` (#767)
+- Fix signature of `Error\FormattedError::prepareFormatter()` to address PHP8 deprecation (#742)
+- Do not add errors key to result when errors discarded by custom error handler (#766)
+
 #### 14.4.0
 
 Fix:

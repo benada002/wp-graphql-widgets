@@ -12,6 +12,7 @@ use WPGraphQL;
  * Class User - Models the data for the User object type
  *
  * @property string $id
+ * @property int    $databaseId
  * @property array  $capabilities
  * @property string $capKey
  * @property array  $roles
@@ -76,6 +77,7 @@ class User extends Model {
 			'isRestricted',
 			'id',
 			'userId',
+			'databaseId',
 			'name',
 			'firstName',
 			'lastName',
@@ -142,23 +144,22 @@ class User extends Model {
 	 * @return bool
 	 */
 	protected function is_private() {
-
-		if ( ! current_user_can( 'list_users' ) && false === $this->owner_matches_current_user() ) {
-
-			/**
-			 * @todo: We should handle this check in a Deferred resolver. Right now it queries once per user
-			 *      but we _could_ query once for _all_ users.
-			 *
-			 *      For now, we only query if the current user doesn't have list_users, instead of querying
-			 *      for ALL users. Slightly more efficient for authenticated users at least.
-			 */
-			if ( ! count_user_posts( absint( $this->data->ID ), WPGraphQL::get_allowed_post_types(), true ) ) {
-				return true;
-			}
+		/**
+		 * If the user has permissions to list users.
+		 */
+		if ( current_user_can( $this->restricted_cap ) ) {
+			return false;
 		}
 
-		return false;
+		/**
+		 * If the owner of the content is the current user
+		 */
+		if ( true === $this->owner_matches_current_user() ) {
+			return false;
+		}
 
+		// @phpstan-ignore-next-line
+		return $this->data->is_private ?? true;
 	}
 
 	/**
@@ -170,10 +171,13 @@ class User extends Model {
 
 		if ( empty( $this->fields ) ) {
 			$this->fields = [
-				'id'                       => function() {
+				'id'                       => function () {
 					return ( ! empty( $this->data->ID ) ) ? Relay::toGlobalId( 'user', (string) $this->data->ID ) : null;
 				},
-				'capabilities'             => function() {
+				'databaseId'               => function () {
+					return $this->userId;
+				},
+				'capabilities'             => function () {
 					if ( ! empty( $this->data->allcaps ) ) {
 
 						/**
@@ -183,7 +187,7 @@ class User extends Model {
 						$capabilities = array_keys(
 							array_filter(
 								$this->data->allcaps,
-								function( $cap ) {
+								function ( $cap ) {
 									return true === $cap;
 								}
 							)
@@ -194,61 +198,61 @@ class User extends Model {
 					return ! empty( $capabilities ) ? $capabilities : null;
 
 				},
-				'capKey'                   => function() {
+				'capKey'                   => function () {
 					return ! empty( $this->data->cap_key ) ? $this->data->cap_key : null;
 				},
-				'roles'                    => function() {
+				'roles'                    => function () {
 					return ! empty( $this->data->roles ) ? $this->data->roles : null;
 				},
-				'email'                    => function() {
+				'email'                    => function () {
 					return ! empty( $this->data->user_email ) ? $this->data->user_email : null;
 				},
-				'firstName'                => function() {
+				'firstName'                => function () {
 					return ! empty( $this->data->first_name ) ? $this->data->first_name : null;
 				},
-				'lastName'                 => function() {
+				'lastName'                 => function () {
 					return ! empty( $this->data->last_name ) ? $this->data->last_name : null;
 				},
-				'extraCapabilities'        => function() {
+				'extraCapabilities'        => function () {
 					return ! empty( $this->data->allcaps ) ? array_keys( $this->data->allcaps ) : null;
 				},
-				'description'              => function() {
+				'description'              => function () {
 					return ! empty( $this->data->description ) ? $this->data->description : null;
 				},
-				'username'                 => function() {
+				'username'                 => function () {
 					return ! empty( $this->data->user_login ) ? $this->data->user_login : null;
 				},
-				'name'                     => function() {
+				'name'                     => function () {
 					return ! empty( $this->data->display_name ) ? $this->data->display_name : null;
 				},
-				'registeredDate'           => function() {
+				'registeredDate'           => function () {
 					$timestamp = ! empty( $this->data->user_registered ) ? strtotime( $this->data->user_registered ) : null;
 					return ! empty( $timestamp ) ? gmdate( 'c', $timestamp ) : null;
 				},
-				'nickname'                 => function() {
+				'nickname'                 => function () {
 					return ! empty( $this->data->nickname ) ? $this->data->nickname : null;
 				},
-				'url'                      => function() {
+				'url'                      => function () {
 					return ! empty( $this->data->user_url ) ? $this->data->user_url : null;
 				},
-				'slug'                     => function() {
+				'slug'                     => function () {
 					return ! empty( $this->data->user_nicename ) ? $this->data->user_nicename : null;
 				},
-				'nicename'                 => function() {
+				'nicename'                 => function () {
 					return ! empty( $this->data->user_nicename ) ? $this->data->user_nicename : null;
 				},
-				'locale'                   => function() {
+				'locale'                   => function () {
 					$user_locale = get_user_locale( $this->data );
 
 					return ! empty( $user_locale ) ? $user_locale : null;
 				},
 				'userId'                   => ! empty( $this->data->ID ) ? absint( $this->data->ID ) : null,
-				'uri'                      => function() {
+				'uri'                      => function () {
 					$user_profile_url = get_author_posts_url( $this->data->ID );
 
 					return ! empty( $user_profile_url ) ? str_ireplace( home_url(), '', $user_profile_url ) : '';
 				},
-				'enqueuedScriptsQueue'     => function() {
+				'enqueuedScriptsQueue'     => function () {
 					global $wp_scripts;
 					do_action( 'wp_enqueue_scripts' );
 					$queue = $wp_scripts->queue;
@@ -257,7 +261,7 @@ class User extends Model {
 
 					return $queue;
 				},
-				'enqueuedStylesheetsQueue' => function() {
+				'enqueuedStylesheetsQueue' => function () {
 					global $wp_styles;
 					do_action( 'wp_enqueue_scripts' );
 					$queue = $wp_styles->queue;

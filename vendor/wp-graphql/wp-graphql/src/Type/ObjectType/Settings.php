@@ -59,10 +59,7 @@ class Settings {
 					$field_key = $key;
 				}
 
-				$group = lcfirst( preg_replace( '[^a-zA-Z0-9 -]', ' ', $setting_field['group'] ) );
-				$group = lcfirst( str_replace( '_', ' ', ucwords( $group, '_' ) ) );
-				$group = lcfirst( str_replace( '-', ' ', ucwords( $group, '_' ) ) );
-				$group = lcfirst( str_replace( ' ', '', ucwords( $group, ' ' ) ) );
+				$group = DataSource::format_group_name( $setting_field['group'] );
 
 				$field_key = lcfirst( preg_replace( '[^a-zA-Z0-9 -]', ' ', $field_key ) );
 				$field_key = lcfirst( str_replace( '_', ' ', ucwords( $field_key, '_' ) ) );
@@ -79,9 +76,8 @@ class Settings {
 					 */
 					$fields[ $field_key ] = [
 						'type'        => $setting_field['type'],
-						'description' => $setting_field['description'],
-
-						'resolve'     => function( $root, $args, $context, $info ) use ( $setting_field, $key ) {
+						'description' => sprintf( __( 'Settings of the the %s Settings Group', 'wp-graphql' ), $setting_field['type'] ),
+						'resolve'     => function ( $root, $args, $context, $info ) use ( $setting_field, $key ) {
 							/**
 							 * Check to see if the user querying the email field has the 'manage_options' capability
 							 * All other options should be public by default
